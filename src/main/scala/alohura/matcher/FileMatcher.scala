@@ -1,12 +1,14 @@
 package alohura
 package matcher
 
+import io.BinaryService
+
 import java.io.File
 
 import org.specs2.matcher._
 import org.specs2.execute._
 
-trait FileMatcher {
+trait FileMatcher extends BinaryService {
   def beFile = new Matcher[String] {
     def apply[S <: String](e: Expectable[S]) = {
       val file = new File(e.value)
@@ -62,6 +64,17 @@ trait FileMatcher {
           s"${e.description} is a file but ${r.message}",
           e)
       }
+    }
+  }
+
+  def haveMD5EqualsTo(expected: String) = new Matcher[File] {
+    def apply[S <: File](e: Expectable[S]) = getSignature(e.value) match {
+      case Left(msg) ⇒ result(false, "", s"${e.description}: an error occured when calculating MD5 signature: $msg", e)
+      case Right(signature) ⇒
+        result(signature == expected,
+          s"${e.description} MD5 signature matches",
+          s"${e.description} MD5 doesn't match. found: $signature, expected: $expected",
+          e)
     }
   }
 }
