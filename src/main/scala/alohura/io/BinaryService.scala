@@ -14,10 +14,13 @@ trait BinaryService {
   private val BUFFER_LENGTH = 8192
   private val HEX_DIGITS = "0123456789abcdef";
 
-  final def readBytes(file: File): Either[String, Array[Byte]] =
-    readBytes(new FileInputStream(file))
+  protected val handler: Throwable ⇒ String =
+    e ⇒ s"Error when reading inputstream: ${e.getMessage}"
 
-  final def readBytes(input: ⇒ InputStream): Either[String, Array[Byte]] = {
+  final def readBytes(file: File, h: Throwable ⇒ String): Either[String, Array[Byte]] =
+    readBytes(new FileInputStream(file), h)
+
+  final def readBytes(input: ⇒ InputStream, h: Throwable ⇒ String): Either[String, Array[Byte]] = {
     lazy val buffer = new Array[Byte](BUFFER_LENGTH)
     lazy val output = new ByteArrayOutputStream
 
@@ -37,7 +40,7 @@ trait BinaryService {
 
       Right(bytes)
     } catch {
-      case e: Throwable ⇒ Left(s"Error when reading inputstream: ${e.getMessage}")
+      case e: Throwable ⇒ Left(h(e))
     } finally {
       try {
         Option(input).foreach(_.close())
@@ -63,6 +66,6 @@ trait BinaryService {
       r.toString
     }
 
-    readBytes(file).right.map(go)
+    readBytes(file, handler).right.map(go)
   }
 }

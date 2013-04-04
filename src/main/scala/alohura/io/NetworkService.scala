@@ -17,6 +17,6 @@ trait NetworkService extends BinaryService {
     case e: UnknownHostException ⇒ Left(s"host $host is unknown")
   }
 
-  def doCurl(addr: String): Either[String, Array[Byte]] =
-    readBytes(new URL(addr).openStream)
+  def doCurl(addr: String, h: Throwable ⇒ String = handler): Either[String, Array[Byte]] =
+    readBytes(new URL(addr).openStream, h)
 }

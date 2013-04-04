@@ -38,7 +38,7 @@ trait NetworkMatcher extends NetworkService {
       case Left(msg) ⇒
         result(false,
           "",
-          s"url doesn't respond: $msg",
+          s"url doesn't respond: ${e.value} ($msg)",
           e)
     }
   }
