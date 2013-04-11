@@ -19,9 +19,9 @@ trait ContentMatcher {
     inst.newSAXParser
   }
 
-  def beValidXMLWith(f: Elem ⇒ MatchResult[_]) = new Matcher[Array[Byte]] {
-    def apply[S <: Array[Byte]](e: Expectable[S]) = try {
-      val xml = XML.loadXML(Source.fromInputStream(new java.io.ByteArrayInputStream(e.value)), parser)
+  def beValidXMLWith[A](f: Elem ⇒ MatchResult[_])(implicit T: ToInputStream[A]) = new Matcher[A] {
+    def apply[S <: A](e: Expectable[S]) = try {
+      val xml = XML.loadXML(Source.fromInputStream(T(e.value)), parser)
       val r = f(xml).toResult
 
       result(r.isSuccess,
