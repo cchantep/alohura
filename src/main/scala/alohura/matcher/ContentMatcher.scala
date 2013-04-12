@@ -11,6 +11,7 @@ import org.specs2.execute._
 import javax.xml.parsers.SAXParserFactory
 
 trait ContentMatcher {
+  import ContentMatcher._
 
   lazy val parser = {
     val inst = SAXParserFactory.newInstance
@@ -18,6 +19,8 @@ trait ContentMatcher {
     inst.setValidating(true)
     inst.newSAXParser
   }
+
+  def beValidXML[A: ToInputStream] = beValidXMLWith(_ ⇒ 1 === 1) //hum..
 
   def beValidXMLWith[A](f: Elem ⇒ MatchResult[_])(implicit T: ToInputStream[A]) = new Matcher[A] {
     def apply[S <: A](e: Expectable[S]) = try {
@@ -37,3 +40,5 @@ trait ContentMatcher {
     }
   }
 }
+
+object ContentMatcher extends MatchersImplicits

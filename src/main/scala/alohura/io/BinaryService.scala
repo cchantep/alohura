@@ -8,6 +8,8 @@ import java.io.ByteArrayOutputStream
 
 import java.security.MessageDigest
 
+import resource._
+
 import scala.annotation.tailrec
 
 trait BinaryService {
@@ -20,34 +22,26 @@ trait BinaryService {
   final def readBytes(file: File, h: Throwable ⇒ String): Either[String, Array[Byte]] =
     readBytes(new FileInputStream(file), h)
 
-  final def readBytes(input: ⇒ InputStream, h: Throwable ⇒ String): Either[String, Array[Byte]] = {
+  final def readBytes(open: ⇒ InputStream, h: Throwable ⇒ String): Either[String, Array[Byte]] = {
     lazy val buffer = new Array[Byte](BUFFER_LENGTH)
     lazy val output = new ByteArrayOutputStream
 
-    @tailrec
-    def loop(buffer: Array[Byte], input: InputStream, output: ByteArrayOutputStream): Array[Byte] = {
-      val i = input.read(buffer)
+    val result = managed(open).acquireFor { input ⇒
+      @tailrec
+      def loop(buffer: Array[Byte], input: InputStream, output: ByteArrayOutputStream): Array[Byte] = {
+        val i = input.read(buffer)
 
-      if (i > 0) {
-        output.write(buffer, 0, i)
-        loop(buffer, input, output)
-      } else
-        output.toByteArray
-    }
-
-    try {
-      val bytes = loop(buffer, input, output)
-
-      Right(bytes)
-    } catch {
-      case e: Throwable ⇒ Left(h(e))
-    } finally {
-      try {
-        Option(input).foreach(_.close())
-      } catch {
-        case e: Throwable ⇒ Left(s"Error during disposal of resources: ${e.getMessage}")
+        if (i > 0) {
+          output.write(buffer, 0, i)
+          loop(buffer, input, output)
+        } else
+          output.toByteArray
       }
+
+      loop(buffer, input, output)
     }
+
+    result.left.map { case e :: _ ⇒ s"Error during disposal of resources: ${e.getMessage}" }
   }
 
   final def getSignature(file: File): Either[String, String] = {
