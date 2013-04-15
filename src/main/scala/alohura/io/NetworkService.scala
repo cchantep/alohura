@@ -1,6 +1,8 @@
 package alohura
 package io
 
+import dispatch._, Defaults._
+
 import java.net.InetAddress
 import java.net.UnknownHostException
 import java.net.URL
@@ -19,4 +21,10 @@ trait NetworkService extends BinaryService {
 
   def doCurl(addr: String, h: Throwable ⇒ String = handler): Either[String, Array[Byte]] =
     readBytes(new URL(addr).openStream, h)
+
+  def doRequest[A](location: String, method: Method)(implicit toContent: ToContent[A]): dispatch.Future[A] = {
+    val svc = url(location)
+
+    Http(method(svc) OK toContent)
+  }
 }
