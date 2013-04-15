@@ -1,7 +1,6 @@
-package alohura
-package matcher
+package alohura.matcher
 
-import io.{ NetworkService, ToContent, Method }
+import alohura.io.{ NetworkService, ToContent, HttpMethod }
 
 import org.specs2.matcher._
 
@@ -29,9 +28,9 @@ trait NetworkMatcher extends NetworkService {
     }
   }
 
-  def beRespondedWith[A](method: Method, duration: Duration = Duration(5, SECONDS))(f: A ⇒ MatchResult[_])(implicit T: ToContent[A]) = new Matcher[String] {
+  def beRespondedWith[A](method: HttpMethod, duration: Duration = Duration(5, SECONDS))(f: A ⇒ MatchResult[_])(implicit T: ToContent[A]) = new Matcher[String] {
     def apply[S <: String](e: Expectable[S]) = try {
-      val a = Await.result(doRequest(e.value, method), duration) // we could supply a max duration here
+      val a = Await.result(doRequest(e.value, method), duration)
       val r = f(a).toResult
 
       result(r.isSuccess,

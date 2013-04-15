@@ -1,11 +1,6 @@
-package alohura
-package io
+package alohura.io
 
-import dispatch._, Defaults._
-
-import java.net.InetAddress
-import java.net.UnknownHostException
-import java.net.URL
+import java.net.{ InetAddress, UnknownHostException, URL }
 
 trait NetworkService extends BinaryService {
   def doPing(host: String, timeout: Int): Either[String, String] = try {
@@ -22,9 +17,11 @@ trait NetworkService extends BinaryService {
   def doCurl(addr: String, h: Throwable ⇒ String = handler): Either[String, Array[Byte]] =
     readBytes(new URL(addr).openStream, h)
 
-  def doRequest[A](location: String, method: Method)(implicit toContent: ToContent[A]): dispatch.Future[A] = {
+  def doRequest[A](location: String, method: HttpMethod)(implicit toContent: ToContent[A]): dispatch.Future[A] = {
+    import dispatch._, Defaults._
+
     val svc = url(location)
 
-    Http(method(svc) OK toContent)
+    dispatch.Http(method(svc) OK toContent)
   }
 }
