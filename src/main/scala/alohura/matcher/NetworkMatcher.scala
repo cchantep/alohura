@@ -1,11 +1,11 @@
 package alohura.matcher
 
-import alohura.io.{ NetworkService, ToContent, HttpMethod }
-
-import org.specs2.matcher._
-
 import scala.concurrent.{ Await, Future }
 import scala.concurrent.duration._
+
+import org.specs2.matcher.{ Expectable, Matcher, MatchResult }
+
+import alohura.io.{ NetworkService, ToContent, HttpMethod }
 
 trait NetworkMatcher extends NetworkService {
 

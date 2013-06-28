@@ -14,13 +14,12 @@ trait NetworkService extends BinaryService {
     case e: UnknownHostException ⇒ Left(s"host $host is unknown")
   }
 
-  def doCurl(addr: String, h: Throwable ⇒ String = handler): Either[String, Array[Byte]] =
-    readBytes(new URL(addr).openStream, h)
+  def doCurl(addr: String, h: Throwable ⇒ String = handler): Either[String, Array[Byte]] = readBytes(new URL(addr).openStream, h)
 
   def doRequest[A](location: String, method: HttpMethod)(implicit toContent: ToContent[A]): dispatch.Future[A] = {
     import dispatch._, Defaults._
 
-    val svc = url(location)
+    val svc = dispatch.url(location)
 
     dispatch.Http(method(svc) OK toContent)
   }

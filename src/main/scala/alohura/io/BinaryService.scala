@@ -1,16 +1,10 @@
-package alohura
-package io
+package alohura.io
 
-import java.io.File
-import java.io.FileInputStream
-import java.io.InputStream
-import java.io.ByteArrayOutputStream
+import java.io.{ ByteArrayOutputStream, File, FileInputStream, InputStream }
 
 import java.security.MessageDigest
 
-import resource._
-
-import scala.annotation.tailrec
+import resource.managed
 
 trait BinaryService {
   private val BUFFER_LENGTH = 8192
@@ -19,15 +13,14 @@ trait BinaryService {
   protected val handler: Throwable ⇒ String =
     e ⇒ s"Error when reading inputstream: ${e.getMessage}"
 
-  final def readBytes(file: File, h: Throwable ⇒ String): Either[String, Array[Byte]] =
-    readBytes(new FileInputStream(file), h)
+  final def readBytes(file: File, h: Throwable ⇒ String): Either[String, Array[Byte]] = readBytes(new FileInputStream(file), h)
 
   final def readBytes(open: ⇒ InputStream, h: Throwable ⇒ String): Either[String, Array[Byte]] = {
     lazy val buffer = new Array[Byte](BUFFER_LENGTH)
     lazy val output = new ByteArrayOutputStream
 
     val result = managed(open).acquireFor { input ⇒
-      @tailrec
+      @annotation.tailrec
       def loop(buffer: Array[Byte], input: InputStream, output: ByteArrayOutputStream): Array[Byte] = {
         val i = input.read(buffer)
 
@@ -41,7 +34,9 @@ trait BinaryService {
       loop(buffer, input, output)
     }
 
-    result.left.map { case e :: _ ⇒ s"Error during disposal of resources: ${e.getMessage}" }
+    result.left.map(e ⇒ "Error during disposal of resources: %s" format {
+      e.map(_.getMessage).mkString
+    })
   }
 
   final def getSignature(file: File): Either[String, String] = {

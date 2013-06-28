@@ -1,5 +1,4 @@
-package alohura
-package io
+package alohura.io
 
 import java.io.File
 

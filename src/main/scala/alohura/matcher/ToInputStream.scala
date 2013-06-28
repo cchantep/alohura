@@ -1,5 +1,4 @@
-package alohura
-package matcher
+package alohura.matcher
 
 import java.io.{ File, FileInputStream, ByteArrayInputStream, InputStream }
 

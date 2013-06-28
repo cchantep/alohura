@@ -1,18 +1,17 @@
-package alohura
-package matcher
+package alohura.matcher
 
-import scala.xml.Source
-import scala.xml.XML
-import scala.xml.Elem
+import scala.xml.{ Elem, Source, XML }
 
-import org.specs2.matcher._
-import org.specs2.execute._
+import org.specs2.matcher.{
+  Expectable,
+  Matcher,
+  MatchResult,
+  MatchersImplicits
+}
 
 import javax.xml.parsers.SAXParserFactory
 
-trait ContentMatcher {
-  import ContentMatcher._
-
+trait ContentMatcher { matchers: MatchersImplicits ⇒
   lazy val parser = {
     val inst = SAXParserFactory.newInstance
 
@@ -40,5 +39,3 @@ trait ContentMatcher {
     }
   }
 }
-
-object ContentMatcher extends MatchersImplicits

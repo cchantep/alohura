@@ -1,12 +1,11 @@
-package alohura
-package matcher
-
-import io.BinaryService
+package alohura.matcher
 
 import java.io.File
 
-import org.specs2.matcher._
-import org.specs2.execute._
+import org.specs2.matcher.{ Expectable, Matcher, MatchResult }
+import org.specs2.execute.Failure
+
+import alohura.io.BinaryService
 
 trait FileMatcher extends BinaryService {
   def beFile = new Matcher[String] {
