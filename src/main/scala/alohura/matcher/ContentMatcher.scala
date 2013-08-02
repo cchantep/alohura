@@ -12,18 +12,18 @@ import org.specs2.matcher.{
 import javax.xml.parsers.SAXParserFactory
 
 trait ContentMatcher { matchers: MatchersImplicits ⇒
-  lazy val parser = {
+  val factory = {
     val inst = SAXParserFactory.newInstance
 
     inst.setValidating(true)
-    inst.newSAXParser
+    inst
   }
 
   def beValidXML[A: ToInputStream] = beValidXMLWith(_ ⇒ 1 === 1) //hum..
 
   def beValidXMLWith[A](f: Elem ⇒ MatchResult[_])(implicit T: ToInputStream[A]) = new Matcher[A] {
     def apply[S <: A](e: Expectable[S]) = try {
-      val xml = XML.loadXML(Source.fromInputStream(T(e.value)), parser)
+      val xml = XML.loadXML(Source.fromInputStream(T(e.value)), factory.newSAXParser)
       val r = f(xml).toResult
 
       result(r.isSuccess,

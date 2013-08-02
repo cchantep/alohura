@@ -16,4 +16,12 @@ object ToInputStream {
   implicit val bytesToInputStream = new ToInputStream[Array[Byte]] {
     def apply[B <: Array[Byte]](input: B) = new ByteArrayInputStream(input)
   }
+
+  implicit val inputStreamToInputStream = new ToInputStream[InputStream] {
+    def apply[B <: InputStream](input: B) = input
+  }
+
+  implicit val stringToInputStream = new ToInputStream[String] {
+    def apply[B <: String](input: B) = new ByteArrayInputStream(input.getBytes("UTF-8"))
+  }
 }
