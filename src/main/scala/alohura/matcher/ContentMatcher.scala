@@ -34,7 +34,7 @@ trait ContentMatcher { matchers: MatchersImplicits ⇒
       case err: Throwable ⇒
         result(false,
           "",
-          s"Failed to valid xml: ${err.getMessage}",
+          s"Invalid XML: ${err.getMessage}",
           e)
     }
   }
