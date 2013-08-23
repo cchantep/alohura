@@ -8,6 +8,15 @@ import org.specs2.matcher.{ Expectable, Matcher, MatchResult }
 import alohura.io.{ NetworkService, ToContent, HttpMethod }
 
 trait NetworkMatcher extends NetworkService {
+  def beListeningOn(port: Int) = new Matcher[String] {
+    def apply[S <: String](e: Expectable[S]) = doSocket(e.value, port) match {
+      case Right(_) ⇒ result(true, s"${e.value} is listening on $port", "", e)
+      case Left(msg) ⇒
+        result(false, "",
+          s"${e.value} is not listening on $port: $msg",
+          e)
+    }
+  }
 
   def beResolvedAs(f: String ⇒ MatchResult[_]) = beResolvedWithin(5000)(f)
 

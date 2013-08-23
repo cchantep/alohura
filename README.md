@@ -13,6 +13,10 @@ Environment specification framework (or on the Discworld, the lightning goddess 
 Alohura can be used in SBT projects adding dependency `"fr.applicius" %% "alohura" % "VERSION"` 
 and having `"Applicius Snapshots" at "https://raw.github.com/applicius/mvn-repo/master/snapshots/"` in resolvers.
 
+### Specs matchers
+
+- `"host" must beListeningOn(80)`
+
 ## Build
 
 Alohura can be built from these sources using SBT (0.12.2+): `sbt publish`
