@@ -16,6 +16,7 @@ and having `"Applicius Snapshots" at "https://raw.github.com/applicius/mvn-repo/
 ### Specs matchers
 
 - `"host" must beListeningOn(80)`
+- `"host" must beRespondingSmtp` or `"host" must beRespondingSmtp(25)`
 
 ## Build
 

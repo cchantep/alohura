@@ -1,20 +1,70 @@
 package alohura.matcher
 
+import java.io.{ BufferedReader, InputStreamReader, PrintWriter }
+import java.util.concurrent.TimeoutException
+
+import scala.concurrent.ExecutionContext
 import scala.concurrent.{ Await, Future }
 import scala.concurrent.duration._
 
 import org.specs2.matcher.{ Expectable, Matcher, MatchResult }
 
+import resource.managed
+
 import alohura.io.{ NetworkService, ToContent, HttpMethod }
 
 trait NetworkMatcher extends NetworkService {
   def beListeningOn(port: Int) = new Matcher[String] {
-    def apply[S <: String](e: Expectable[S]) = doSocket(e.value, port) match {
+    def apply[S <: String](e: Expectable[S]) = doSocket(e.value, port)() match {
       case Right(_) ⇒ result(true, s"${e.value} is listening on $port", "", e)
       case Left(msg) ⇒
         result(false, "",
           s"${e.value} is not listening on $port: $msg",
           e)
+    }
+  }
+
+  def beRespondingSmtp: Matcher[String] = beRespondingSmtp(25)
+
+  def beRespondingSmtp(port: Int, timeout: Int = 5)(implicit exec: ExecutionContext = ExecutionContext.Implicits.global): Matcher[String] = new Matcher[String] {
+    def apply[S <: String](e: Expectable[S]) = doSocket(e.value, port)({ s ⇒
+      val io = for {
+        is ← managed(s.getInputStream)
+        ir ← managed(new InputStreamReader(is))
+        br ← managed(new BufferedReader(ir))
+        os ← managed(s.getOutputStream)
+        pw ← managed(new PrintWriter(os))
+      } yield (br, pw)
+
+      io acquireAndGet { x ⇒
+        val (in, out) = x
+
+        out.println("HELO github.com")
+        out.flush()
+
+        val f: Future[String] = Future {
+          val line = in.readLine()
+          val l = line.length
+
+          if (l < 3) sys.error(s"No SMTP status: $line")
+          else line.substring(0, 3)
+        }
+
+        try {
+          Right(Await.result(f, Duration(timeout, SECONDS)))
+        } catch {
+          case t: Throwable ⇒ Left(t.getMessage)
+        }
+      }
+    }) match {
+      case Right(_) ⇒ result(true,
+        s"${e.value} is responding to SMTP on $port", "", e)
+
+      case Left(msg) ⇒
+        result(false, "",
+          s"${e.value} is not responding to SMTP on $port: $msg",
+          e)
+
     }
   }
 
