@@ -1,10 +1,8 @@
 package alohura.matcher
 
 import java.io.{ BufferedReader, InputStreamReader, PrintWriter }
-import java.util.concurrent.TimeoutException
 
-import scala.concurrent.ExecutionContext
-import scala.concurrent.{ Await, Future }
+import scala.concurrent.{ Await, ExecutionContext, Future }
 import scala.concurrent.duration._
 
 import org.specs2.matcher.{ Expectable, Matcher, MatchResult }

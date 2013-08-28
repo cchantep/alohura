@@ -15,8 +15,17 @@ and having `"Applicius Snapshots" at "https://raw.github.com/applicius/mvn-repo/
 
 ### Specs matchers
 
+Class:
+- `"name.of.class.A" must beInstantiated[a.super.class.of.A](jarUrl)` (class A must have a no-arg constructor)
+- `"name.of.class.A" must beInstantiatedLike[a.super.class.of.A](jarUrl) { instance => ... }`
+
+Network:
+- `"host" must beResolvedAs { host => ... }`
 - `"host" must beListeningOn(80)`
 - `"host" must beRespondingSmtp` or `"host" must beRespondingSmtp(25)`
+
+SQL/Database:
+- `"jdbc:url" must connectDatabaseWith("user", "password"[, secTimeout, Some(java.sql.Driver)])`
 
 ## Build
 

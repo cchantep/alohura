@@ -2,7 +2,7 @@ name := "alohura"
 
 organization := "fr.applicius"
 
-version := "1.0.8"
+version := "1.0.9"
 
 scalaVersion := "2.10.2"
 
