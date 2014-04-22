@@ -2,14 +2,14 @@ name := "alohura"
 
 organization := "fr.applicius"
 
-version := "1.0.10"
+version := "1.0.11"
 
-scalaVersion := "2.10.3"
+scalaVersion := "2.10.4"
 
 resolvers += "Typesafe Snapshots" at "http://repo.typesafe.com/typesafe/snapshots/"
 
 libraryDependencies ++= Seq(
-  "org.specs2" %% "specs2" % "2.3.2",
+  "org.specs2" %% "specs2" % "2.3.11",
   "com.jsuereth" %% "scala-arm" % "1.3",
   "net.databinder.dispatch" %% "dispatch-core" % "0.10.0")
 
