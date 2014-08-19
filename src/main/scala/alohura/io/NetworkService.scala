@@ -25,7 +25,7 @@ trait NetworkService extends BinaryService {
       case e: IOException ⇒ Left(s"cannot send packet to $host:$port")
       case t: Throwable   ⇒ Left(s"cannot create socket to $host:$port")
     } finally {
-      if (socket != null) try { socket close }
+      if (socket != null) try { socket close } catch { case _: Throwable ⇒ () }
     }
   }
 

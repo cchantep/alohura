@@ -25,7 +25,7 @@ trait SqlMatcher {
         }
         val connected = c.fold(false) { x ⇒
           val connected = !x.isClosed()
-          try { x.close() }
+          try { x.close() } catch { case _: Throwable ⇒ () }
           connected && x.isClosed() // was connected and is closed
         }
 
