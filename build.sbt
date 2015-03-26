@@ -1,10 +1,10 @@
 name := "alohura"
 
-organization := "fr.applicius"
+organization := "alohura"
 
 version := "1.0.12"
 
-scalaVersion := "2.11.2"
+scalaVersion := "2.11.6"
 
 resolvers += "Typesafe Snapshots" at "http://repo.typesafe.com/typesafe/snapshots/"
 

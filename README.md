@@ -10,8 +10,8 @@ Environment specification framework (or on the Discworld, the lightning goddess 
 
 ## Usage
 
-Alohura can be used in SBT projects adding dependency `"fr.applicius" %% "alohura" % "VERSION"` 
-and having `"Applicius Snapshots" at "https://raw.github.com/applicius/mvn-repo/master/snapshots/"` in resolvers.
+Alohura can be used in SBT projects adding dependency `"alohura" %% "alohura" % "VERSION"` 
+and having `"Tatami Releases" at "https://raw.github.com/cchantep/tatami/master/releases/"` in resolvers.
 
 ### Specs matchers
 
