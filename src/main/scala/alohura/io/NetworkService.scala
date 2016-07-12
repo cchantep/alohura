@@ -1,7 +1,15 @@
 package alohura.io
 
 import java.io.{ IOException, OutputStream }
-import java.net.{ InetAddress, UnknownHostException, URL, Socket }
+import java.net.{
+  InetAddress,
+  InetSocketAddress,
+  UnknownHostException,
+  URL,
+  Socket,
+  SocketAddress,
+  SocketTimeoutException
+}
 
 import resource.managed
 
@@ -14,28 +22,46 @@ trait NetworkService extends BinaryService {
       else Left(s"socket not connected to ${s.getInetAddress.getHostName}:${s.getPort}")
     }
 
-  def doSocket(host: String, port: Int)(f: Socket ⇒ Either[String, String] = dummySocketWrite): Either[String, String] = {
-    var socket: Socket = null
+  def doSocket(host: String, port: Int, timeout: Int = 0)(f: Socket ⇒ Either[String, String] = dummySocketWrite): Either[String, String] = withSocket(new InetSocketAddress(host, port))(f)
+
+  def doDummySocket(host: String, port: Int, timeout: Int = 0): Either[String, String] =
+    doSocket(host, port, timeout)(dummySocketWrite _)
+
+  def withDummySocket(addr: ⇒ SocketAddress, timeout: Int = 0): Either[String, String] = withSocket(addr, timeout)(dummySocketWrite _)
+
+  def withSocket(addr: ⇒ SocketAddress, timeout: Int = 0)(f: Socket ⇒ Either[String, String]): Either[String, String] = {
+    lazy val socket: Socket = new Socket()
 
     try {
-      f(new Socket(InetAddress.getByName(host), port))
+      socket.connect(addr, timeout)
+      socket.setSoTimeout(timeout)
+
+      f(socket)
     } catch {
+      case e: SocketTimeoutException ⇒
+        Left(s"connection timeout to ${socket.getInetAddress} ($timeout)")
+
       case e: UnknownHostException ⇒
-        Left(s"host $host is unknown")
-      case e: IOException ⇒ Left(s"cannot send packet to $host:$port")
-      case t: Throwable   ⇒ Left(s"cannot create socket to $host:$port")
+        Left(s"${socket.getInetAddress} is unknown (${e.getMessage})")
+
+      case e: IOException ⇒ Left(
+        s"cannot send packet to ${socket.getInetAddress} (${e.getMessage})")
+
+      case t: Throwable   ⇒ Left(
+        s"cannot create socket to ${socket.getInetAddress} (${t.getMessage})")
+
     } finally {
-      if (socket != null) try { socket close } catch { case _: Throwable ⇒ () }
+      if (socket != null) try {
+        socket.close()
+      } catch { case _: Throwable ⇒ () }
     }
   }
 
   def doPing(host: String, timeout: Int): Either[String, String] = try {
     val inet = InetAddress.getByName(host)
 
-    if (inet.isReachable(timeout))
-      Right(inet.getHostAddress)
-    else
-      Left(s"Host $host is not reachable")
+    if (inet.isReachable(timeout)) Right(inet.getHostAddress)
+    else Left(s"Host $host is not reachable")
   } catch {
     case e: UnknownHostException ⇒ Left(s"host $host is unknown")
   }

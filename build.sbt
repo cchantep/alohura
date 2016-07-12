@@ -2,14 +2,16 @@ name := "alohura"
 
 organization := "alohura"
 
-version := "1.0.12"
+version := "1.0.13"
 
-scalaVersion := "2.11.6"
+scalaVersion := "2.11.8"
 
 resolvers += "Typesafe Snapshots" at "http://repo.typesafe.com/typesafe/snapshots/"
 
 libraryDependencies ++= Seq(
-  "org.specs2" %% "specs2" % "2.4.1",
+  "specs2-core", "specs2-junit").map("org.specs2" %% _ % "3.8.3")
+
+libraryDependencies ++= Seq(
   "com.jsuereth" %% "scala-arm" % "1.4",
   "net.databinder.dispatch" %% "dispatch-core" % "0.11.2")
 

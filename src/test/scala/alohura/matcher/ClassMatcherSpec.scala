@@ -1,9 +1,7 @@
-package alohura.matcher
+package tests
 
-import org.specs2.mutable.Specification
-
-object ClassMatcherSpec extends Specification
-    with ClassMatcher with ClassMatcherFixtures {
+class ClassMatcherSpec extends org.specs2.mutable.Specification 
+    with alohura.matcher.ClassMatcher with ClassMatcherFixtures {
 
   "Class matcher" title
 

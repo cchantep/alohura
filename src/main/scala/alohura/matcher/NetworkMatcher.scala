@@ -1,6 +1,7 @@
 package alohura.matcher
 
 import java.io.{ BufferedReader, InputStreamReader, PrintWriter }
+import java.net.InetSocketAddress
 
 import scala.concurrent.{ Await, ExecutionContext, Future }
 import scala.concurrent.duration._
@@ -68,20 +69,52 @@ trait NetworkMatcher extends NetworkService {
 
   def beResolvedAs(f: String ⇒ MatchResult[_]) = beResolvedWithin(5000)(f)
 
-  def beResolvedWithin(timeout: Int)(f: String ⇒ MatchResult[_]) = new Matcher[String] {
-    def apply[S <: String](e: Expectable[S]) = doPing(e.value, timeout) match {
-      case Right(addr) ⇒
-        val r = f(addr).toResult
+  def beResolvedWithin(timeout: Int)(f: String ⇒ MatchResult[_]) =
+    new Matcher[String] {
+      def apply[S <: String](e: Expectable[S]) =
+        doPing(e.value, timeout) match {
+          case Right(addr) ⇒ {
+            val r = f(addr).toResult
 
-        result(r.isSuccess,
-          s"${e.description} is resolved at $addr and ${r.message}",
-          s"${e.description} is resolved at $addr but ${r.message}",
-          e)
-      case Left(msg) ⇒
-        result(false,
-          "",
-          s"${e.description} can't be resolved: $msg",
-          e)
+            result(r.isSuccess,
+              s"${e.description} is resolved at $addr and ${r.message}",
+              s"${e.description} is resolved at $addr but ${r.message}",
+              e)
+          }
+
+          case Left(msg) ⇒ 
+            result(false,
+              "",
+              s"${e.description} can't be resolved: $msg",
+              e)
+        }
+    }
+
+  def haveAvailability(timeout: Int = 1000, count: Int = 10)(min: Int = count * 99 / 100)(f: (String, Int) ⇒ MatchResult[_]) = new Matcher[(String, Int)] {
+    def apply[S <: (String, Int)](e: Expectable[S]) = {
+      val (host, port) = e.value
+
+      def test(n: Int, err: Int): MatchResult[S] =
+        if (n == count) {
+          val success = count - err
+
+          if (success < min) {
+            result(false, "", s"Availability of ${e.description} is not sufficient: $success < $min", e)
+          } else {
+            val r = f(host, port).toResult
+
+            result(r.isSuccess,
+              s"${e.value} is available and ${r.message}",
+              s"${e.value} is available but ${r.message}",
+              e)
+          }
+        } else withDummySocket(
+          new InetSocketAddress(host, port), timeout) match {
+          case Right(_) ⇒ test(n + 1, err)
+          case _ ⇒ test(n + 1, err + 1)
+        }
+
+      test(0, 0)
     }
   }
 
