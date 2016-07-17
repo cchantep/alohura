@@ -24,5 +24,5 @@ class ClassMatcherSpec extends org.specs2.mutable.Specification
 }
 
 sealed trait ClassMatcherFixtures {
-  lazy val testJar = getClass.getResource("test.jar")
+  lazy val testJar = getClass.getResource("/test.jar")
 }

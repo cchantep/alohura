@@ -7,7 +7,7 @@ class NetworkMatcherSpec extends org.specs2.mutable.Specification
 
   "GitHub" should {
     "be available on port 80" in {
-      ("github.com", 80) must haveAvailability()() { (_, _) ⇒ ok }
+      ("github.com", 80) must haveAvailability()(min = 8) { (_, _) ⇒ ok }
     }
 
     "not be available on port 8080" in {
