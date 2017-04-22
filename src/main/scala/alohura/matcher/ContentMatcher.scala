@@ -11,6 +11,8 @@ import org.specs2.matcher.{
 
 import javax.xml.parsers.SAXParserFactory
 
+import alohura.io.ToInputStream
+
 trait ContentMatcher { matchers: MatchersImplicits ⇒
   val factory = {
     val inst = SAXParserFactory.newInstance
@@ -26,16 +28,20 @@ trait ContentMatcher { matchers: MatchersImplicits ⇒
       val xml = XML.loadXML(Source.fromInputStream(T(e.value)), factory.newSAXParser)
       val r = f(xml).toResult
 
-      result(r.isSuccess,
+      result(
+        r.isSuccess,
         s"xml is valid and ${r.message}",
         s"xml is valid but ${r.message}",
-        e)
+        e
+      )
     } catch {
-      case err: Throwable ⇒
-        result(false,
+      case err: Exception ⇒
+        result(
+          false,
           "",
           s"Invalid XML: ${err.getMessage}",
-          e)
+          e
+        )
     }
   }
 }

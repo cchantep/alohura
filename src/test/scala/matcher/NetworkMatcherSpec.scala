@@ -1,4 +1,4 @@
-package tests
+package matcher
 
 class NetworkMatcherSpec extends org.specs2.mutable.Specification
     with alohura.matcher.NetworkMatcher {

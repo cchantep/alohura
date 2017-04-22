@@ -14,6 +14,7 @@ import alohura.io.{ NetworkService, ToContent, HttpMethod }
 
 trait NetworkMatcher extends NetworkService {
   def beListeningOn(port: Int) = new Matcher[String] {
+    @SuppressWarnings(Array("BoundedByFinalType"))
     def apply[S <: String](e: Expectable[S]) = doSocket(e.value, port)() match {
       case Right(_) ⇒ result(true, s"${e.value} is listening on $port", "", e)
       case Left(msg) ⇒
@@ -25,7 +26,11 @@ trait NetworkMatcher extends NetworkService {
 
   def beRespondingSmtp: Matcher[String] = beRespondingSmtp(25)
 
-  def beRespondingSmtp(port: Int, timeout: Int = 5)(implicit exec: ExecutionContext = ExecutionContext.Implicits.global): Matcher[String] = new Matcher[String] {
+  /**
+   * @param timeout the timeout in seconds
+   */
+  def beRespondingSmtp(port: Int, timeout: Long = 5L)(implicit exec: ExecutionContext = ExecutionContext.Implicits.global): Matcher[String] = new Matcher[String] {
+    @SuppressWarnings(Array("BoundedByFinalType"))
     def apply[S <: String](e: Expectable[S]) = doSocket(e.value, port)({ s ⇒
       val io = for {
         is ← managed(s.getInputStream)
@@ -52,12 +57,14 @@ trait NetworkMatcher extends NetworkService {
         try {
           Right(Await.result(f, Duration(timeout, SECONDS)))
         } catch {
-          case t: Throwable ⇒ Left(t.getMessage)
+          case t: Exception ⇒ Left(t.getMessage)
         }
       }
     }) match {
-      case Right(_) ⇒ result(true,
-        s"${e.value} is responding to SMTP on $port", "", e)
+      case Right(_) ⇒ result(
+        true,
+        s"${e.value} is responding to SMTP on $port", "", e
+      )
 
       case Left(msg) ⇒
         result(false, "",
@@ -71,22 +78,27 @@ trait NetworkMatcher extends NetworkService {
 
   def beResolvedWithin(timeout: Int)(f: String ⇒ MatchResult[_]) =
     new Matcher[String] {
+      @SuppressWarnings(Array("BoundedByFinalType"))
       def apply[S <: String](e: Expectable[S]) =
         doPing(e.value, timeout) match {
           case Right(addr) ⇒ {
             val r = f(addr).toResult
 
-            result(r.isSuccess,
+            result(
+              r.isSuccess,
               s"${e.description} is resolved at $addr and ${r.message}",
               s"${e.description} is resolved at $addr but ${r.message}",
-              e)
+              e
+            )
           }
 
-          case Left(msg) ⇒ 
-            result(false,
+          case Left(msg) ⇒
+            result(
+              false,
               "",
               s"${e.description} can't be resolved: $msg",
-              e)
+              e
+            )
         }
     }
 
@@ -103,36 +115,44 @@ trait NetworkMatcher extends NetworkService {
           } else {
             val r = f(host, port).toResult
 
-            result(r.isSuccess,
+            result(
+              r.isSuccess,
               s"${e.value} is available and ${r.message}",
               s"${e.value} is available but ${r.message}",
-              e)
+              e
+            )
           }
         } else withDummySocket(
-          new InetSocketAddress(host, port), timeout) match {
-          case Right(_) ⇒ test(n + 1, err)
-          case _ ⇒ test(n + 1, err + 1)
-        }
+          new InetSocketAddress(host, port), timeout
+        ) match {
+            case Right(_) ⇒ test(n + 1, err)
+            case _ ⇒ test(n + 1, err + 1)
+          }
 
       test(0, 0)
     }
   }
 
   def beRespondedWith[A](method: HttpMethod, duration: Duration = Duration(5, SECONDS))(f: A ⇒ MatchResult[_])(implicit T: ToContent[A]) = new Matcher[String] {
+    @SuppressWarnings(Array("BoundedByFinalType"))
     def apply[S <: String](e: Expectable[S]) = try {
       val a = Await.result(doRequest(e.value, method), duration)
       val r = f(a).toResult
 
-      result(r.isSuccess,
+      result(
+        r.isSuccess,
         s"url respond and ${r.message}",
         s"url respond but ${r.message}",
-        e)
+        e
+      )
     } catch {
-      case ex: Throwable ⇒
-        result(false,
+      case ex: Exception ⇒
+        result(
+          false,
           "",
           s"url doesn't respond: ${e.value} (${ex.getMessage})",
-          e)
+          e
+        )
     }
   }
 }
