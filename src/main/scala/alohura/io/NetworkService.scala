@@ -1,6 +1,6 @@
 package alohura.io
 
-import java.io.{ IOException, OutputStream }
+import java.io.IOException
 import java.net.{
   InetAddress,
   InetSocketAddress,
@@ -29,10 +29,13 @@ trait NetworkService extends BinaryService {
 
   def withDummySocket(addr: ⇒ SocketAddress, timeout: Int = 0): Either[String, String] = withSocket(addr, timeout)(dummySocketWrite _)
 
+  @SuppressWarnings(Array("NullAssignment", "NullParameter"))
   def withSocket(addr: ⇒ SocketAddress, timeout: Int = 0)(f: Socket ⇒ Either[String, String]): Either[String, String] = {
-    lazy val socket: Socket = new Socket()
+    var socket: Socket = null
 
     try {
+      socket = new Socket()
+
       socket.connect(addr, timeout)
       socket.setSoTimeout(timeout)
 
@@ -45,15 +48,16 @@ trait NetworkService extends BinaryService {
         Left(s"${socket.getInetAddress} is unknown (${e.getMessage})")
 
       case e: IOException ⇒ Left(
-        s"cannot send packet to ${socket.getInetAddress} (${e.getMessage})")
+        s"cannot send packet to ${socket.getInetAddress} (${e.getMessage})"
+      )
 
-      case t: Throwable   ⇒ Left(
-        s"cannot create socket to ${socket.getInetAddress} (${t.getMessage})")
-
+      case t: Exception ⇒ Left(
+        s"cannot create socket to ${socket.getInetAddress} (${t.getMessage})"
+      )
     } finally {
       if (socket != null) try {
         socket.close()
-      } catch { case _: Throwable ⇒ () }
+      } catch { case _: Exception ⇒ () }
     }
   }
 

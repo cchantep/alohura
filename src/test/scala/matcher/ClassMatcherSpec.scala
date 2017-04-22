@@ -1,6 +1,6 @@
-package tests
+package matcher
 
-class ClassMatcherSpec extends org.specs2.mutable.Specification 
+class ClassMatcherSpec extends org.specs2.mutable.Specification
     with alohura.matcher.ClassMatcher with ClassMatcherFixtures {
 
   "Class matcher" title
@@ -24,5 +24,5 @@ class ClassMatcherSpec extends org.specs2.mutable.Specification
 }
 
 sealed trait ClassMatcherFixtures {
-  lazy val testJar = getClass.getResource("/test.jar")
+  lazy val testJar = getClass.getResource("test.jar")
 }
