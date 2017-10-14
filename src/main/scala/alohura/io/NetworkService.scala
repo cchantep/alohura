@@ -48,12 +48,10 @@ trait NetworkService extends BinaryService {
         Left(s"${socket.getInetAddress} is unknown (${e.getMessage})")
 
       case e: IOException ⇒ Left(
-        s"cannot send packet to ${socket.getInetAddress} (${e.getMessage})"
-      )
+        s"cannot send packet to ${socket.getInetAddress} (${e.getMessage})")
 
       case t: Exception ⇒ Left(
-        s"cannot create socket to ${socket.getInetAddress} (${t.getMessage})"
-      )
+        s"cannot create socket to ${socket.getInetAddress} (${t.getMessage})")
     } finally {
       if (socket != null) try {
         socket.close()

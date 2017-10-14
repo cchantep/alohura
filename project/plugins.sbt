@@ -1,4 +1,4 @@
-addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.5.0")
+addSbtPlugin("org.scalariform" % "sbt-scalariform" % "1.7.1")
 
 addSbtPlugin("de.johoop" % "cpd4sbt" % "1.2.0")
 

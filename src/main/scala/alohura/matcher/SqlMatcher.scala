@@ -25,8 +25,7 @@ trait SqlMatcher {
         } map { d ⇒
           Await.result(
             Future { d.connect(connectionUrl, prop) },
-            Duration(timeout, SECONDS)
-          )
+            Duration(timeout, SECONDS))
 
         }
         val connected = c.fold(false) { x ⇒
@@ -38,16 +37,14 @@ trait SqlMatcher {
         result(
           connected,
           s"${e.description} succeed to connect to the database",
-          s"${e.description} cannot connect to database: ${e.value}", e
-        )
+          s"${e.description} cannot connect to database: ${e.value}", e)
 
       } catch {
         case ex: Exception ⇒
           result(
             false,
             "",
-            s"${e.description} failed to connect to database: ${ex.getMessage}", e
-          )
+            s"${e.description} failed to connect to database: ${ex.getMessage}", e)
       }
     }
 

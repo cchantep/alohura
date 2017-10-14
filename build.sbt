@@ -2,9 +2,9 @@ name := "alohura"
 
 organization := "alohura"
 
-version := "1.0.14"
+version := "1.0.15"
 
-scalaVersion := "2.11.8"
+scalaVersion := "2.11.11"
 
 resolvers += "Typesafe Snapshots" at "http://repo.typesafe.com/typesafe/snapshots/"
 
@@ -38,7 +38,7 @@ scalacOptions in (Test, console) ~= {
 }
 
 libraryDependencies ++= Seq(
-  "specs2-core", "specs2-junit").map("org.specs2" %% _ % "3.8.9")
+  "specs2-core", "specs2-junit").map("org.specs2" %% _ % "4.0.0")
 
 libraryDependencies ++= Seq(
   "com.jsuereth" %% "scala-arm" % "2.0",
@@ -47,6 +47,8 @@ libraryDependencies ++= Seq(
 publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
 
 // Scapegoat
-scapegoatVersion := "1.1.0"
+scapegoatVersion := "1.3.2"
+
+scapegoatDisabledInspections := Seq("FinalModifierOnCaseClass")
 
 scapegoatReports := Seq("xml")

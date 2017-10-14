@@ -30,18 +30,15 @@ trait ClassMatcher {
           result(
             r.isSuccess,
             s"${e.description} succeed to instantiate ${e.value}",
-            s"${e.description} cannot instantiate class: ${e.value}: ${r.message}", e
-          )
+            s"${e.description} cannot instantiate class: ${e.value}: ${r.message}", e)
 
         case (None, Some(i)) ⇒ result(
           true,
-          s"${e.description} succeed to instantiate ${e.value}", "", e
-        )
+          s"${e.description} succeed to instantiate ${e.value}", "", e)
 
         case _ ⇒ result(
           false,
-          "", s"${e.description} cannot instantiate class: ${e.value}", e
-        )
+          "", s"${e.description} cannot instantiate class: ${e.value}", e)
 
       }
     } catch {
@@ -50,8 +47,7 @@ trait ClassMatcher {
           false,
           "",
           s"${e.description} failed to instantiate class: ${ex.getClass} ${ex.getMessage}",
-          e
-        )
+          e)
     }
   }).when(jar != null, s"cannot check null JAR: $jar")
 }
