@@ -13,9 +13,9 @@ trait BinaryService {
   protected val handler: Throwable ⇒ String =
     e ⇒ s"Error when reading inputstream: ${e.getMessage}"
 
-  final def readBytes(file: File, h: Throwable ⇒ String): Either[String, Array[Byte]] = readBytes(new FileInputStream(file), h)
+  final def readBytes(file: File): Either[String, Array[Byte]] = readBytes(new FileInputStream(file))
 
-  final def readBytes(open: ⇒ InputStream, h: Throwable ⇒ String): Either[String, Array[Byte]] = {
+  final def readBytes(open: ⇒ InputStream): Either[String, Array[Byte]] = {
     lazy val buffer = new Array[Byte](BUFFER_LENGTH)
     lazy val output = new ByteArrayOutputStream
 
@@ -55,6 +55,6 @@ trait BinaryService {
       r.toString
     }
 
-    readBytes(file, handler).right.map(go)
+    readBytes(file).right.map(go)
   }
 }

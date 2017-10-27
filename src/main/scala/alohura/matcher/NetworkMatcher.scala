@@ -3,6 +3,8 @@ package alohura.matcher
 import java.io.{ BufferedReader, InputStreamReader, PrintWriter }
 import java.net.InetSocketAddress
 
+import scala.util.control.NonFatal
+
 import scala.concurrent.{ Await, ExecutionContext, Future }
 import scala.concurrent.duration._
 
@@ -57,14 +59,13 @@ trait NetworkMatcher extends NetworkService {
         try {
           Right(Await.result(f, Duration(timeout, SECONDS)))
         } catch {
-          case t: Exception ⇒ Left(t.getMessage)
+          case NonFatal(t) ⇒ Left(t.getMessage)
         }
       }
     }) match {
       case Right(_) ⇒ result(
         true,
-        s"${e.value} is responding to SMTP on $port", "", e
-      )
+        s"${e.value} is responding to SMTP on $port", "", e)
 
       case Left(msg) ⇒
         result(false, "",
@@ -88,8 +89,7 @@ trait NetworkMatcher extends NetworkService {
               r.isSuccess,
               s"${e.description} is resolved at $addr and ${r.message}",
               s"${e.description} is resolved at $addr but ${r.message}",
-              e
-            )
+              e)
           }
 
           case Left(msg) ⇒
@@ -97,8 +97,7 @@ trait NetworkMatcher extends NetworkService {
               false,
               "",
               s"${e.description} can't be resolved: $msg",
-              e
-            )
+              e)
         }
     }
 
@@ -119,12 +118,10 @@ trait NetworkMatcher extends NetworkService {
               r.isSuccess,
               s"${e.value} is available and ${r.message}",
               s"${e.value} is available but ${r.message}",
-              e
-            )
+              e)
           }
         } else withDummySocket(
-          new InetSocketAddress(host, port), timeout
-        ) match {
+          new InetSocketAddress(host, port), timeout) match {
             case Right(_) ⇒ test(n + 1, err)
             case _ ⇒ test(n + 1, err + 1)
           }
@@ -143,16 +140,14 @@ trait NetworkMatcher extends NetworkService {
         r.isSuccess,
         s"url respond and ${r.message}",
         s"url respond but ${r.message}",
-        e
-      )
+        e)
     } catch {
-      case ex: Exception ⇒
+      case NonFatal(ex) ⇒
         result(
           false,
           "",
           s"url doesn't respond: ${e.value} (${ex.getMessage})",
-          e
-        )
+          e)
     }
   }
 }

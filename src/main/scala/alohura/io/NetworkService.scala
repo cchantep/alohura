@@ -11,6 +11,8 @@ import java.net.{
   SocketTimeoutException
 }
 
+import scala.util.control.NonFatal
+
 import resource.managed
 
 trait NetworkService extends BinaryService {
@@ -22,7 +24,7 @@ trait NetworkService extends BinaryService {
       else Left(s"socket not connected to ${s.getInetAddress.getHostName}:${s.getPort}")
     }
 
-  def doSocket(host: String, port: Int, timeout: Int = 0)(f: Socket ⇒ Either[String, String] = dummySocketWrite): Either[String, String] = withSocket(new InetSocketAddress(host, port))(f)
+  def doSocket(host: String, port: Int, timeout: Int = 0)(f: Socket ⇒ Either[String, String] = dummySocketWrite): Either[String, String] = withSocket(new InetSocketAddress(host, port), timeout)(f)
 
   def doDummySocket(host: String, port: Int, timeout: Int = 0): Either[String, String] =
     doSocket(host, port, timeout)(dummySocketWrite _)
@@ -41,23 +43,21 @@ trait NetworkService extends BinaryService {
 
       f(socket)
     } catch {
-      case e: SocketTimeoutException ⇒
+      case _: SocketTimeoutException ⇒
         Left(s"connection timeout to ${socket.getInetAddress} ($timeout)")
 
       case e: UnknownHostException ⇒
         Left(s"${socket.getInetAddress} is unknown (${e.getMessage})")
 
       case e: IOException ⇒ Left(
-        s"cannot send packet to ${socket.getInetAddress} (${e.getMessage})"
-      )
+        s"cannot send packet to ${socket.getInetAddress} (${e.getMessage})")
 
-      case t: Exception ⇒ Left(
-        s"cannot create socket to ${socket.getInetAddress} (${t.getMessage})"
-      )
+      case NonFatal(t) ⇒ Left(
+        s"cannot create socket to ${socket.getInetAddress} (${t.getMessage})")
     } finally {
       if (socket != null) try {
         socket.close()
-      } catch { case _: Exception ⇒ () }
+      } catch { case NonFatal(_) ⇒ () }
     }
   }
 
@@ -67,10 +67,10 @@ trait NetworkService extends BinaryService {
     if (inet.isReachable(timeout)) Right(inet.getHostAddress)
     else Left(s"Host $host is not reachable")
   } catch {
-    case e: UnknownHostException ⇒ Left(s"host $host is unknown")
+    case _: UnknownHostException ⇒ Left(s"host $host is unknown")
   }
 
-  def doCurl(addr: String, h: Throwable ⇒ String = handler): Either[String, Array[Byte]] = readBytes(new URL(addr).openStream, h)
+  def doCurl(addr: String): Either[String, Array[Byte]] = readBytes(new URL(addr).openStream)
 
   def doRequest[A](location: String, method: HttpMethod)(implicit toContent: ToContent[A]): dispatch.Future[A] = {
     import dispatch._, Defaults._

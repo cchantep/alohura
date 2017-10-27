@@ -17,8 +17,7 @@ trait FileMatcher extends BinaryService {
         file.exists && file.isFile,
         s"${e.description} is a file",
         s"${e.description} is not a file",
-        e
-      )
+        e)
     }
 
     def which(f: File ⇒ MatchResult[_]) = this and functionMatcher(f)
@@ -37,8 +36,7 @@ trait FileMatcher extends BinaryService {
           r.isSuccess,
           s"${e.description} is a file and ${r.message}",
           s"${e.description} is a file but ${r.message}",
-          e
-        )
+          e)
       }
     }
   }
@@ -52,8 +50,7 @@ trait FileMatcher extends BinaryService {
         file.exists && file.isDirectory,
         s"${e.description} is a directory",
         s"${e.description} is not a directory",
-        e
-      )
+        e)
     }
 
     def which(f: File ⇒ MatchResult[_]) = this and functionMatcher(f)
@@ -72,8 +69,7 @@ trait FileMatcher extends BinaryService {
           r.isSuccess,
           s"${e.description} is a file and ${r.message}",
           s"${e.description} is a file but ${r.message}",
-          e
-        )
+          e)
       }
     }
   }
@@ -86,8 +82,7 @@ trait FileMatcher extends BinaryService {
           signature == expected,
           s"${e.description} MD5 signature matches",
           s"${e.description} MD5 doesn't match. found: $signature, expected: $expected",
-          e
-        )
+          e)
     }
   }
 }
