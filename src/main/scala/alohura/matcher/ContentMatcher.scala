@@ -1,5 +1,7 @@
 package alohura.matcher
 
+import scala.util.control.NonFatal
+
 import scala.xml.{ Elem, Source, XML }
 
 import org.specs2.matcher.{
@@ -32,16 +34,14 @@ trait ContentMatcher { matchers: MatchersImplicits ⇒
         r.isSuccess,
         s"xml is valid and ${r.message}",
         s"xml is valid but ${r.message}",
-        e
-      )
+        e)
     } catch {
-      case err: Exception ⇒
+      case NonFatal(err) ⇒
         result(
           false,
           "",
           s"Invalid XML: ${err.getMessage}",
-          e
-        )
+          e)
     }
   }
 }

@@ -1,7 +1,7 @@
 package matcher
 
 class ClassMatcherSpec extends org.specs2.mutable.Specification
-    with alohura.matcher.ClassMatcher with ClassMatcherFixtures {
+  with alohura.matcher.ClassMatcher with ClassMatcherFixtures {
 
   "Class matcher" title
 

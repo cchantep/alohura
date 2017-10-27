@@ -2,6 +2,8 @@ package alohura.matcher
 
 import java.net.{ URL, URLClassLoader }
 
+import scala.util.control.NonFatal
+
 import org.specs2.matcher.{ Expectable, Matcher, MatchResult }
 
 /**
@@ -30,28 +32,24 @@ trait ClassMatcher {
           result(
             r.isSuccess,
             s"${e.description} succeed to instantiate ${e.value}",
-            s"${e.description} cannot instantiate class: ${e.value}: ${r.message}", e
-          )
+            s"${e.description} cannot instantiate class: ${e.value}: ${r.message}", e)
 
-        case (None, Some(i)) ⇒ result(
+        case (None, Some(_)) ⇒ result(
           true,
-          s"${e.description} succeed to instantiate ${e.value}", "", e
-        )
+          s"${e.description} succeed to instantiate ${e.value}", "", e)
 
         case _ ⇒ result(
           false,
-          "", s"${e.description} cannot instantiate class: ${e.value}", e
-        )
+          "", s"${e.description} cannot instantiate class: ${e.value}", e)
 
       }
     } catch {
-      case ex: Exception ⇒
+      case NonFatal(ex) ⇒
         result(
           false,
           "",
           s"${e.description} failed to instantiate class: ${ex.getClass} ${ex.getMessage}",
-          e
-        )
+          e)
     }
   }).when(jar != null, s"cannot check null JAR: $jar")
 }
