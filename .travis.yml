@@ -1,8 +1,7 @@
-sudo: false
 language: scala
 jdk:
-  - oraclejdk8
-scala: 2.12.4
+  - openjdk8
+scala: 2.12.8
 cache:
   directories:
   - $HOME/.ivy2

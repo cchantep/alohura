@@ -9,14 +9,14 @@ class ClassMatcherSpec extends org.specs2.mutable.Specification
     "instantiated as java.lang.Object" in {
       ("alohura.matcher.TestObject" must beInstantiated[Object](testJar)).
         and("alohura.matcher.TestObject".
-          aka("test class") must beInstantiatedLike[Object](testJar) { o ⇒
+          aka("test class") must beInstantiatedLike[Object](testJar) { _ ⇒
             true must beTrue
           })
     }
 
     "not be instantiated with extra matcher" in {
       "alohura.matcher.TestObject".
-        aka("test class") must not(beInstantiatedLike[Object](testJar) { o ⇒
+        aka("test class") must not(beInstantiatedLike[Object](testJar) { _ ⇒
           false must beTrue
         })
     }
