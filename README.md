@@ -4,9 +4,9 @@ Environment specification framework (or on the Discworld, the lightning goddess 
 
 ## Requirements
 
-* Scala 2.10
-* Java 1.6+
-* SBT 0.13.x
+* Scala 2.12
+* Java 1.8+
+* SBT 1.0+
 
 ## Usage
 
@@ -29,4 +29,4 @@ SQL/Database:
 
 ## Build
 
-Alohura can be built from these sources using SBT (0.13+): `sbt publish`
+Alohura can be built from these sources using SBT: `sbt publish`

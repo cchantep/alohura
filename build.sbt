@@ -2,9 +2,9 @@ name := "alohura"
 
 organization := "alohura"
 
-version := "1.0.15"
+version := "1.0.16"
 
-scalaVersion := "2.12.4"
+scalaVersion := "2.12.8"
 
 resolvers += "Typesafe Snapshots" at "http://repo.typesafe.com/typesafe/snapshots/"
 
@@ -34,7 +34,7 @@ scalacOptions in (Test, console) ~= {
 }
 
 libraryDependencies ++= Seq(
-  "specs2-core", "specs2-junit").map("org.specs2" %% _ % "3.9.4")
+  "specs2-core", "specs2-junit").map("org.specs2" %% _ % "4.5.1")
 
 libraryDependencies ++= Seq(
   "com.jsuereth" %% "scala-arm" % "2.0",
