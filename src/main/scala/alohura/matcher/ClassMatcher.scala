@@ -25,8 +25,9 @@ trait ClassMatcher {
     def apply[S <: String](e: Expectable[S]) = try {
       val loader = URLClassLoader.newInstance(Array(jar), cl)
       val c = loader.loadClass(e.value)
+      def newInstance = c.getConstructor().newInstance().asInstanceOf[A]
 
-      (onInstance, Option(c.newInstance.asInstanceOf[A])) match {
+      (onInstance, Option(newInstance)) match {
         case (Some(m), Some(i)) ⇒
           val r = m(i).toResult
           result(

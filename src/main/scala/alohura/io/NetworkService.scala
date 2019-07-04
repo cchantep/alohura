@@ -77,6 +77,6 @@ trait NetworkService extends BinaryService {
 
     val svc = dispatch.url(location)
 
-    dispatch.Http(method(svc) OK toContent)
+    dispatch.Http.default(method(svc) OK toContent)
   }
 }
