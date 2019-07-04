@@ -3,6 +3,7 @@ package alohura.matcher
 import java.net.{ URL, URLClassLoader }
 
 import scala.util.control.NonFatal
+import scala.reflect.ClassTag
 
 import org.specs2.matcher.{ Expectable, Matcher, MatchResult }
 
@@ -13,21 +14,22 @@ trait ClassMatcher {
   /**
    * @param cl $clParam
    */
-  def beInstantiated[A](jar: URL, cl: ClassLoader = getClass.getClassLoader): Matcher[String] = beInstantiated[A](jar, cl, None)
+  @inline def beInstantiated[A](jar: URL, cl: ClassLoader = getClass.getClassLoader)(implicit ct: ClassTag[A]): Matcher[String] = beInstantiated[A](jar, cl, None)
 
   /**
    * @param cl $clParam
    */
-  def beInstantiatedLike[A](jar: URL, cl: ClassLoader = getClass.getClassLoader)(onInstance: A ⇒ MatchResult[_]): Matcher[String] = beInstantiated[A](jar, cl, Some(onInstance))
+  @inline def beInstantiatedLike[A](jar: URL, cl: ClassLoader = getClass.getClassLoader)(onInstance: A ⇒ MatchResult[_])(implicit ct: ClassTag[A]): Matcher[String] = beInstantiated[A](jar, cl, Some(onInstance))
 
-  private def beInstantiated[A](jar: URL, cl: ClassLoader, onInstance: Option[A ⇒ MatchResult[_]]): Matcher[String] = (new Matcher[String] {
+  private def beInstantiated[A](jar: URL, cl: ClassLoader, onInstance: Option[A ⇒ MatchResult[_]])(implicit ct: ClassTag[A]): Matcher[String] = (new Matcher[String] {
     @SuppressWarnings(Array("BoundedByFinalType"))
     def apply[S <: String](e: Expectable[S]) = try {
       val loader = URLClassLoader.newInstance(Array(jar), cl)
       val c = loader.loadClass(e.value)
-      def newInstance = c.getConstructor().newInstance().asInstanceOf[A]
 
-      (onInstance, Option(newInstance)) match {
+      def newInstance: Option[A] = ct.unapply(c.getConstructor().newInstance())
+
+      (onInstance, newInstance) match {
         case (Some(m), Some(i)) ⇒
           val r = m(i).toResult
           result(
