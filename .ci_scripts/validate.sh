@@ -13,4 +13,4 @@ EOF
 false
 )
 
-sbt ++$TRAVIS_SCALA_VERSION test-only scapegoat
+sbt ++$TRAVIS_SCALA_VERSION testOnly scapegoat

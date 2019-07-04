@@ -2,6 +2,8 @@ package alohura.matcher
 
 import java.sql.{ Connection, Driver, DriverManager }
 
+import scala.util.control.NonFatal
+
 import scala.concurrent.{ Await, ExecutionContext, Future }
 import scala.concurrent.duration._
 
@@ -30,7 +32,7 @@ trait SqlMatcher {
         }
         val connected = c.fold(false) { x ⇒
           val connected = !x.isClosed()
-          try { x.close() } catch { case _: Exception ⇒ () }
+          try { x.close() } catch { case NonFatal(_) ⇒ () }
           connected && x.isClosed() // was connected and is closed
         }
 
@@ -40,7 +42,7 @@ trait SqlMatcher {
           s"${e.description} cannot connect to database: ${e.value}", e)
 
       } catch {
-        case ex: Exception ⇒
+        case NonFatal(ex) ⇒
           result(
             false,
             "",

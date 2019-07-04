@@ -3,6 +3,8 @@ package alohura.matcher
 import java.io.{ BufferedReader, InputStreamReader, PrintWriter }
 import java.net.InetSocketAddress
 
+import scala.util.control.NonFatal
+
 import scala.concurrent.{ Await, ExecutionContext, Future }
 import scala.concurrent.duration._
 
@@ -57,7 +59,7 @@ trait NetworkMatcher extends NetworkService {
         try {
           Right(Await.result(f, Duration(timeout, SECONDS)))
         } catch {
-          case t: Exception ⇒ Left(t.getMessage)
+          case NonFatal(t) ⇒ Left(t.getMessage)
         }
       }
     }) match {
@@ -140,7 +142,7 @@ trait NetworkMatcher extends NetworkService {
         s"url respond but ${r.message}",
         e)
     } catch {
-      case ex: Exception ⇒
+      case NonFatal(ex) ⇒
         result(
           false,
           "",
