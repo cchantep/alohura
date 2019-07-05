@@ -6,6 +6,9 @@ version := "1.0.16"
 
 scalaVersion := "2.12.8"
 
+crossScalaVersions in ThisBuild := Seq(
+  "2.11.12", scalaVersion.value)
+
 resolvers += "Typesafe Snapshots" at "http://repo.typesafe.com/typesafe/snapshots/"
 
 scalacOptions ++= Seq(
@@ -44,5 +47,7 @@ publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.
 
 // Scapegoat
 scapegoatVersion in ThisBuild := "1.3.3"
+
+scapegoatDisabledInspections := Seq("FinalModifierOnCaseClass")
 
 scapegoatReports in ThisBuild := Seq("xml")
