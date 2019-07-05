@@ -41,7 +41,7 @@ libraryDependencies ++= Seq(
 
 libraryDependencies ++= Seq(
   "com.jsuereth" %% "scala-arm" % "2.0",
-  "net.databinder.dispatch" %% "dispatch-core" % "0.12.3")
+  "net.databinder.dispatch" %% "dispatch-core" % "0.13.4")
 
 publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
 
