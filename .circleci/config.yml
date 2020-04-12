@@ -1,0 +1,49 @@
+version: 2.1
+
+commands:
+  collect_test_reports:
+    description: Collect test reports
+    steps:
+      - run:
+          name: Collect test report
+          command: |
+                    mkdir test-reports
+                    find . -path '*/test-reports/*' -name '*.xml' \
+                      -print -exec cp {} test-reports \;
+          when: always
+
+jobs:
+  build_n_tests:
+    docker:
+      - image: circleci/openjdk:8-jdk
+      
+    working_directory: ~/repo
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "build.sbt" }}
+
+      - run:
+          name: Build & Run tests
+          command: ./.ci_scripts/validate.sh
+          environment:
+            SCALA_VERSION: 2.12.10
+
+      - save_cache:
+          paths:
+            - ~/.ivy2
+          key: v1-dependencies-{{ checksum "build.sbt" }}
+
+      - collect_test_reports
+      - store_test_results:
+          path: test-reports
+
+workflows:
+  version: 2
+
+  main_suite:
+    jobs:
+      - build_n_tests

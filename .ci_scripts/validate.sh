@@ -4,7 +4,7 @@ set -e
 
 echo "[INFO] Check the source format"
 
-sbt ++$TRAVIS_SCALA_VERSION scalariformFormat test:scalariformFormat > /dev/null
+sbt ++$SCALA_VERSION scalariformFormat test:scalariformFormat > /dev/null
 git diff --exit-code || (cat >> /dev/stdout <<EOF
 [ERROR] Scalariform check failed, see differences above.
 To fix, format your sources using sbt scalariformFormat test:scalariformFormat before submitting a pull request.
@@ -13,4 +13,4 @@ EOF
 false
 )
 
-sbt ++$TRAVIS_SCALA_VERSION testOnly scapegoat
+sbt ++$SCALA_VERSION testOnly scapegoat
