@@ -13,4 +13,4 @@ EOF
 false
 )
 
-sbt ++$SCALA_VERSION testOnly scapegoat
+sbt ++$SCALA_VERSION error test:compile warn testOnly scapegoat
