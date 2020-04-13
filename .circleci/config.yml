@@ -27,15 +27,21 @@ jobs:
           - v1-dependencies-{{ checksum "build.sbt" }}
 
       - run:
-          name: Build & Run tests
-          command: ./.ci_scripts/validate.sh
-          environment:
-            SCALA_VERSION: 2.12.10
+          name: Update dependencies
+          command: sbt ++2.12.10 update
 
       - save_cache:
           paths:
             - ~/.ivy2
+            - ~/.coursier/cache
+            - ~/.sbt
           key: v1-dependencies-{{ checksum "build.sbt" }}
+
+      - run:
+          name: Build & Run tests
+          command: ./.ci_scripts/validate.sh
+          environment:
+            SCALA_VERSION: 2.12.10
 
       - collect_test_reports
       - store_test_results:

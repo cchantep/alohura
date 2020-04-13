@@ -30,3 +30,5 @@ SQL/Database:
 ## Build
 
 Alohura can be built from these sources using SBT: `sbt publish`
+
+[![CircleCI](https://circleci.com/gh/cchantep/alohura.svg?style=svg)](https://circleci.com/gh/cchantep/alohura)
