@@ -37,7 +37,7 @@ scalacOptions in (Test, console) ~= {
 }
 
 libraryDependencies ++= Seq(
-  "specs2-core", "specs2-junit").map("org.specs2" %% _ % "4.9.4")
+  "specs2-core", "specs2-junit").map("org.specs2" %% _ % "4.10.0")
 
 libraryDependencies ++= Seq(
   "com.jsuereth" %% "scala-arm" % "2.0",
