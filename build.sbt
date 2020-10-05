@@ -9,7 +9,7 @@ scalaVersion := "2.12.8"
 crossScalaVersions in ThisBuild := Seq(
   "2.11.12", scalaVersion.value)
 
-resolvers += "Typesafe Snapshots" at "http://repo.typesafe.com/typesafe/snapshots/"
+resolvers += "Typesafe Snapshots" at "https://repo.typesafe.com/typesafe/snapshots/"
 
 scalacOptions ++= Seq(
   "-encoding", "UTF-8",
