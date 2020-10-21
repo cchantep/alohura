@@ -46,7 +46,7 @@ libraryDependencies ++= Seq(
 publishTo := Some(Resolver.file("file",  new File(Path.userHome.absolutePath+"/.m2/repository")))
 
 // Scapegoat
-scapegoatVersion in ThisBuild := "1.3.3"
+scapegoatVersion in ThisBuild := "1.3.11"
 
 scapegoatDisabledInspections := Seq("FinalModifierOnCaseClass")
 
