@@ -28,7 +28,7 @@ jobs:
 
       - run:
           name: Update dependencies
-          command: sbt ++2.12.10 update
+          command: sbt ++2.12.13 update
 
       - save_cache:
           paths:
@@ -41,7 +41,7 @@ jobs:
           name: Build & Run tests
           command: ./.ci_scripts/validate.sh
           environment:
-            SCALA_VERSION: 2.12.10
+            SCALA_VERSION: 2.12.13
 
       - collect_test_reports
       - store_test_results:
