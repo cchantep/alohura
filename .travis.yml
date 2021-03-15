@@ -6,7 +6,7 @@ cache:
   directories:
   - $HOME/.ivy2
   - $HOME/.sbt
-  
+
 install:
   - |
     # update this only when sbt-the-bash-script needs to be updated
