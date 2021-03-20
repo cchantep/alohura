@@ -19,9 +19,9 @@ trait ClassMatcher {
   /**
    * @param cl $clParam
    */
-  @inline def beInstantiatedLike[A](jar: URL, cl: ClassLoader = getClass.getClassLoader)(onInstance: A ⇒ MatchResult[_])(implicit ct: ClassTag[A]): Matcher[String] = beInstantiated[A](jar, cl, Some(onInstance))
+  @inline def beInstantiatedLike[A](jar: URL, cl: ClassLoader = getClass.getClassLoader)(onInstance: A => MatchResult[_])(implicit ct: ClassTag[A]): Matcher[String] = beInstantiated[A](jar, cl, Some(onInstance))
 
-  private def beInstantiated[A](jar: URL, cl: ClassLoader, onInstance: Option[A ⇒ MatchResult[_]])(implicit ct: ClassTag[A]): Matcher[String] = (new Matcher[String] {
+  private def beInstantiated[A](jar: URL, cl: ClassLoader, onInstance: Option[A => MatchResult[_]])(implicit ct: ClassTag[A]): Matcher[String] = (new Matcher[String] {
     @SuppressWarnings(Array("BoundedByFinalType"))
     def apply[S <: String](e: Expectable[S]) = try {
       val loader = URLClassLoader.newInstance(Array(jar), cl)
@@ -30,24 +30,24 @@ trait ClassMatcher {
       def newInstance: Option[A] = ct.unapply(c.getConstructor().newInstance())
 
       (onInstance, newInstance) match {
-        case (Some(m), Some(i)) ⇒
+        case (Some(m), Some(i)) =>
           val r = m(i).toResult
           result(
             r.isSuccess,
             s"${e.description} succeed to instantiate ${e.value}",
             s"${e.description} cannot instantiate class: ${e.value}: ${r.message}", e)
 
-        case (None, Some(_)) ⇒ result(
+        case (None, Some(_)) => result(
           true,
           s"${e.description} succeed to instantiate ${e.value}", "", e)
 
-        case _ ⇒ result(
+        case _ => result(
           false,
           "", s"${e.description} cannot instantiate class: ${e.value}", e)
 
       }
     } catch {
-      case NonFatal(ex) ⇒
+      case NonFatal(ex) =>
         result(
           false,
           "",

@@ -15,4 +15,4 @@ false
 
 export _JAVA_OPTIONS="-Xmx1G"
 
-sbt ++$SCALA_VERSION error test:compile warn testOnly scapegoat
+sbt ++$SCALA_VERSION error test:compile warn testOnly

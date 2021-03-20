@@ -20,9 +20,9 @@ trait FileMatcher extends BinaryService {
         e)
     }
 
-    def which(f: File ⇒ MatchResult[_]) = this and functionMatcher(f)
+    def which(f: File => MatchResult[_]) = this and functionMatcher(f)
 
-    private def functionMatcher(f: File ⇒ MatchResult[_]) = new Matcher[String] {
+    private def functionMatcher(f: File => MatchResult[_]) = new Matcher[String] {
       @SuppressWarnings(Array("BoundedByFinalType"))
       def apply[S <: String](e: Expectable[S]) = {
         val file = new File(e.value)
@@ -53,9 +53,9 @@ trait FileMatcher extends BinaryService {
         e)
     }
 
-    def which(f: File ⇒ MatchResult[_]) = this and functionMatcher(f)
+    def which(f: File => MatchResult[_]) = this and functionMatcher(f)
 
-    private def functionMatcher(f: File ⇒ MatchResult[_]) = new Matcher[String] {
+    private def functionMatcher(f: File => MatchResult[_]) = new Matcher[String] {
       @SuppressWarnings(Array("BoundedByFinalType"))
       def apply[S <: String](e: Expectable[S]) = {
         val file = new File(e.value)
@@ -76,8 +76,8 @@ trait FileMatcher extends BinaryService {
 
   def haveMD5EqualsTo(expected: String) = new Matcher[File] {
     def apply[S <: File](e: Expectable[S]) = getSignature(e.value) match {
-      case Left(msg) ⇒ result(false, "", s"${e.description}: an error occured when calculating MD5 signature: $msg", e)
-      case Right(signature) ⇒
+      case Left(msg) => result(false, "", s"${e.description}: an error occured when calculating MD5 signature: $msg", e)
+      case Right(signature) =>
         result(
           signature == expected,
           s"${e.description} MD5 signature matches",

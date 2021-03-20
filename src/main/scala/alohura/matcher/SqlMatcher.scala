@@ -24,15 +24,15 @@ trait SqlMatcher {
 
         val c: Option[Connection] = driver orElse {
           Option(DriverManager.getDriver(connectionUrl))
-        } map { d ⇒
+        } map { d =>
           Await.result(
             Future { d.connect(connectionUrl, prop) },
             Duration(timeout, SECONDS))
 
         }
-        val connected = c.fold(false) { x ⇒
+        val connected = c.fold(false) { x =>
           val connected = !x.isClosed()
-          try { x.close() } catch { case NonFatal(_) ⇒ () }
+          try { x.close() } catch { case NonFatal(_) => () }
           connected && x.isClosed() // was connected and is closed
         }
 
@@ -42,7 +42,7 @@ trait SqlMatcher {
           s"${e.description} cannot connect to database: ${e.value}", e)
 
       } catch {
-        case NonFatal(ex) ⇒
+        case NonFatal(ex) =>
           result(
             false,
             "",

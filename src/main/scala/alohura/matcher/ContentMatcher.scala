@@ -15,7 +15,7 @@ import javax.xml.parsers.SAXParserFactory
 
 import alohura.io.ToInputStream
 
-trait ContentMatcher { matchers: MatchersImplicits ⇒
+trait ContentMatcher { matchers: MatchersImplicits =>
   val factory = {
     val inst = SAXParserFactory.newInstance
 
@@ -23,9 +23,9 @@ trait ContentMatcher { matchers: MatchersImplicits ⇒
     inst
   }
 
-  def beValidXML[A: ToInputStream] = beValidXMLWith(_ ⇒ 1 === 1) //hum..
+  def beValidXML[A: ToInputStream] = beValidXMLWith(_ => 1 === 1) //hum..
 
-  def beValidXMLWith[A](f: Elem ⇒ MatchResult[_])(implicit T: ToInputStream[A]) = new Matcher[A] {
+  def beValidXMLWith[A](f: Elem => MatchResult[_])(implicit T: ToInputStream[A]) = new Matcher[A] {
     def apply[S <: A](e: Expectable[S]) = try {
       val xml = XML.loadXML(Source.fromInputStream(T(e.value)), factory.newSAXParser)
       val r = f(xml).toResult
@@ -36,7 +36,7 @@ trait ContentMatcher { matchers: MatchersImplicits ⇒
         s"xml is valid but ${r.message}",
         e)
     } catch {
-      case NonFatal(err) ⇒
+      case NonFatal(err) =>
         result(
           false,
           "",

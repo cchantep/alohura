@@ -16,6 +16,11 @@ jobs:
   build_n_tests:
     docker:
       - image: circleci/openjdk:8-jdk
+
+    parameters:
+      scala_version:
+        type: string
+        default: "2.13.4"
       
     working_directory: ~/repo
 
@@ -24,11 +29,11 @@ jobs:
 
       - restore_cache:
           keys:
-          - v1-dependencies-{{ checksum "build.sbt" }}
+          - build-{{ checksum "build.sbt" }}-<< parameters.scala_version >>
 
       - run:
           name: Update dependencies
-          command: sbt ++2.12.13 update
+          command: sbt ++<< parameters.scala_version >> update
 
       - save_cache:
           paths:
@@ -41,7 +46,7 @@ jobs:
           name: Build & Run tests
           command: ./.ci_scripts/validate.sh
           environment:
-            SCALA_VERSION: 2.12.13
+            SCALA_VERSION: << parameters.scala_version >>
 
       - collect_test_reports
       - store_test_results:
@@ -52,4 +57,18 @@ workflows:
 
   main_suite:
     jobs:
-      - build_n_tests
+      - build_n_tests:
+          name: build_n_tests_211
+          scala_version: "2.11.12"
+
+      - build_n_tests:
+          name: build_n_tests_212
+          scala_version: "2.12.13"
+
+      - build_n_tests:
+          name: build_n_tests_213
+          scala_version: "2.13.5"
+
+      - build_n_tests:
+          name: build_n_tests_3
+          scala_version: "3.0.0-RC1"

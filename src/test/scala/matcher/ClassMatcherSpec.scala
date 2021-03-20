@@ -3,20 +3,20 @@ package matcher
 class ClassMatcherSpec extends org.specs2.mutable.Specification
   with alohura.matcher.ClassMatcher with ClassMatcherFixtures {
 
-  "Class matcher" title
+  "Class matcher".title
 
   "Class alohura.matcher.TestObject" should {
     "instantiated as java.lang.Object" in {
       ("alohura.matcher.TestObject" must beInstantiated[Object](testJar)).
         and("alohura.matcher.TestObject".
-          aka("test class") must beInstantiatedLike[Object](testJar) { _ ⇒
+          aka("test class") must beInstantiatedLike[Object](testJar) { _ =>
             true must beTrue
           })
     }
 
     "not be instantiated with extra matcher" in {
       "alohura.matcher.TestObject".
-        aka("test class") must not(beInstantiatedLike[Object](testJar) { _ ⇒
+        aka("test class") must not(beInstantiatedLike[Object](testJar) { _ =>
           false must beTrue
         })
     }
