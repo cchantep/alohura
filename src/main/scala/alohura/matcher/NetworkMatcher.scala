@@ -1,4 +1,5 @@
-package alohura.matcher
+package alohura
+package matcher
 
 import java.io.{ BufferedReader, InputStreamReader, PrintWriter }
 import java.net.InetSocketAddress
@@ -18,8 +19,8 @@ trait NetworkMatcher extends NetworkService {
   def beListeningOn(port: Int) = new Matcher[String] {
     @SuppressWarnings(Array("BoundedByFinalType"))
     def apply[S <: String](e: Expectable[S]) = doSocket(e.value, port)() match {
-      case Right(_) ⇒ result(true, s"${e.value} is listening on $port", "", e)
-      case Left(msg) ⇒
+      case Right(_) => result(true, s"${e.value} is listening on $port", "", e)
+      case Left(msg) =>
         result(false, "",
           s"${e.value} is not listening on $port: $msg",
           e)
@@ -33,16 +34,16 @@ trait NetworkMatcher extends NetworkService {
    */
   def beRespondingSmtp(port: Int, timeout: Long = 5L)(implicit exec: ExecutionContext = ExecutionContext.Implicits.global): Matcher[String] = new Matcher[String] {
     @SuppressWarnings(Array("BoundedByFinalType"))
-    def apply[S <: String](e: Expectable[S]) = doSocket(e.value, port)({ s ⇒
+    def apply[S <: String](e: Expectable[S]) = doSocket(e.value, port)({ s =>
       val io = for {
-        is ← managed(s.getInputStream)
-        ir ← managed(new InputStreamReader(is))
-        br ← managed(new BufferedReader(ir))
-        os ← managed(s.getOutputStream)
-        pw ← managed(new PrintWriter(os))
+        is <- managed(s.getInputStream)
+        ir <- managed(new InputStreamReader(is))
+        br <- managed(new BufferedReader(ir))
+        os <- managed(s.getOutputStream)
+        pw <- managed(new PrintWriter(os))
       } yield (br, pw)
 
-      io acquireAndGet { x ⇒
+      io acquireAndGet { x =>
         val (in, out) = x
 
         out.println("HELO github.com")
@@ -59,15 +60,15 @@ trait NetworkMatcher extends NetworkService {
         try {
           Right(Await.result(f, Duration(timeout, SECONDS)))
         } catch {
-          case NonFatal(t) ⇒ Left(t.getMessage)
+          case NonFatal(t) => Left(t.getMessage)
         }
       }
     }) match {
-      case Right(_) ⇒ result(
+      case Right(_) => result(
         true,
         s"${e.value} is responding to SMTP on $port", "", e)
 
-      case Left(msg) ⇒
+      case Left(msg) =>
         result(false, "",
           s"${e.value} is not responding to SMTP on $port: $msg",
           e)
@@ -75,14 +76,14 @@ trait NetworkMatcher extends NetworkService {
     }
   }
 
-  def beResolvedAs(f: String ⇒ MatchResult[_]) = beResolvedWithin(5000)(f)
+  def beResolvedAs(f: String => MatchResult[_]) = beResolvedWithin(5000)(f)
 
-  def beResolvedWithin(timeout: Int)(f: String ⇒ MatchResult[_]) =
+  def beResolvedWithin(timeout: Int)(f: String => MatchResult[_]) =
     new Matcher[String] {
       @SuppressWarnings(Array("BoundedByFinalType"))
       def apply[S <: String](e: Expectable[S]) =
         doPing(e.value, timeout) match {
-          case Right(addr) ⇒ {
+          case Right(addr) => {
             val r = f(addr).toResult
 
             result(
@@ -92,7 +93,7 @@ trait NetworkMatcher extends NetworkService {
               e)
           }
 
-          case Left(msg) ⇒
+          case Left(msg) =>
             result(
               false,
               "",
@@ -101,7 +102,7 @@ trait NetworkMatcher extends NetworkService {
         }
     }
 
-  def haveAvailability(timeout: Int = 1000, count: Int = 10)(min: Int = count * 99 / 100)(f: (String, Int) ⇒ MatchResult[_]) = new Matcher[(String, Int)] {
+  def haveAvailability(timeout: Int = 1000, count: Int = 10)(min: Int = count * 99 / 100)(f: (String, Int) => MatchResult[_]) = new Matcher[(String, Int)] {
     def apply[S <: (String, Int)](e: Expectable[S]) = {
       val (host, port) = e.value
 
@@ -122,15 +123,15 @@ trait NetworkMatcher extends NetworkService {
           }
         } else withDummySocket(
           new InetSocketAddress(host, port), timeout) match {
-            case Right(_) ⇒ test(n + 1, err)
-            case _ ⇒ test(n + 1, err + 1)
+            case Right(_) => test(n + 1, err)
+            case _ => test(n + 1, err + 1)
           }
 
       test(0, 0)
     }
   }
 
-  def beRespondedWith[A](method: HttpMethod, duration: Duration = Duration(5, SECONDS))(f: A ⇒ MatchResult[_])(implicit T: ToContent[A]) = new Matcher[String] {
+  def beRespondedWith[A](method: HttpMethod, duration: Duration = Duration(5, SECONDS))(f: A => MatchResult[_])(implicit T: ToContent[A]) = new Matcher[String] {
     @SuppressWarnings(Array("BoundedByFinalType"))
     def apply[S <: String](e: Expectable[S]) = try {
       val a = Await.result(doRequest(e.value, method), duration)
@@ -142,7 +143,7 @@ trait NetworkMatcher extends NetworkService {
         s"url respond but ${r.message}",
         e)
     } catch {
-      case NonFatal(ex) ⇒
+      case NonFatal(ex) =>
         result(
           false,
           "",

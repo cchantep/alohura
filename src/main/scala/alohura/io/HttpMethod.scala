@@ -2,7 +2,7 @@ package alohura.io
 
 import dispatch._
 
-sealed trait HttpMethod extends (Req ⇒ Req)
+sealed trait HttpMethod extends (Req => Req)
 
 object GET extends HttpMethod {
   def apply(r: Req) = r.GET

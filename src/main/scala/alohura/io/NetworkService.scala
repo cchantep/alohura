@@ -1,4 +1,5 @@
-package alohura.io
+package alohura
+package io
 
 import java.io.IOException
 import java.net.{
@@ -17,22 +18,22 @@ import resource.managed
 
 trait NetworkService extends BinaryService {
   private def dummySocketWrite(s: Socket): Either[String, String] =
-    managed(s.getOutputStream) acquireAndGet { out ⇒
+    managed(s.getOutputStream).acquireAndGet { out =>
       out.write(1)
 
       if (s.isConnected) Right(s.toString)
       else Left(s"socket not connected to ${s.getInetAddress.getHostName}:${s.getPort}")
     }
 
-  def doSocket(host: String, port: Int, timeout: Int = 0)(f: Socket ⇒ Either[String, String] = dummySocketWrite): Either[String, String] = withSocket(new InetSocketAddress(host, port), timeout)(f)
+  def doSocket(host: String, port: Int, timeout: Int = 0)(f: Socket => Either[String, String] = dummySocketWrite): Either[String, String] = withSocket(new InetSocketAddress(host, port), timeout)(f)
 
   def doDummySocket(host: String, port: Int, timeout: Int = 0): Either[String, String] =
     doSocket(host, port, timeout)(dummySocketWrite _)
 
-  def withDummySocket(addr: ⇒ SocketAddress, timeout: Int = 0): Either[String, String] = withSocket(addr, timeout)(dummySocketWrite _)
+  def withDummySocket(addr: => SocketAddress, timeout: Int = 0): Either[String, String] = withSocket(addr, timeout)(dummySocketWrite _)
 
   @SuppressWarnings(Array("NullAssignment", "NullParameter"))
-  def withSocket(addr: ⇒ SocketAddress, timeout: Int = 0)(f: Socket ⇒ Either[String, String]): Either[String, String] = {
+  def withSocket(addr: => SocketAddress, timeout: Int = 0)(f: Socket => Either[String, String]): Either[String, String] = {
     var socket: Socket = null
 
     try {
@@ -43,21 +44,21 @@ trait NetworkService extends BinaryService {
 
       f(socket)
     } catch {
-      case _: SocketTimeoutException ⇒
+      case _: SocketTimeoutException =>
         Left(s"connection timeout to ${socket.getInetAddress} ($timeout)")
 
-      case e: UnknownHostException ⇒
+      case e: UnknownHostException =>
         Left(s"${socket.getInetAddress} is unknown (${e.getMessage})")
 
-      case e: IOException ⇒ Left(
+      case e: IOException => Left(
         s"cannot send packet to ${socket.getInetAddress} (${e.getMessage})")
 
-      case NonFatal(t) ⇒ Left(
+      case NonFatal(t) => Left(
         s"cannot create socket to ${socket.getInetAddress} (${t.getMessage})")
     } finally {
       if (socket != null) try {
         socket.close()
-      } catch { case NonFatal(_) ⇒ () }
+      } catch { case NonFatal(_) => () }
     }
   }
 
@@ -67,7 +68,7 @@ trait NetworkService extends BinaryService {
     if (inet.isReachable(timeout)) Right(inet.getHostAddress)
     else Left(s"Host $host is not reachable")
   } catch {
-    case _: UnknownHostException ⇒ Left(s"host $host is unknown")
+    case _: UnknownHostException => Left(s"host $host is unknown")
   }
 
   def doCurl(addr: String): Either[String, Array[Byte]] = readBytes(new URL(addr).openStream)
