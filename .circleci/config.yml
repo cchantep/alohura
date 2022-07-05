@@ -63,7 +63,7 @@ workflows:
 
       - build_n_tests:
           name: build_n_tests_212
-          scala_version: "2.12.15"
+          scala_version: "2.12.16"
 
       - build_n_tests:
           name: build_n_tests_213
