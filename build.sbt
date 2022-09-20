@@ -4,7 +4,7 @@ organization := "alohura"
 
 version := "1.0.16"
 
-scalaVersion := "2.12.16"
+scalaVersion := "2.12.17"
 
 crossScalaVersions := Seq(
   "2.11.12", scalaVersion.value, "2.13.8", "3.0.0-RC1")
