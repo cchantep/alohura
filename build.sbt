@@ -7,7 +7,7 @@ version := "1.0.16"
 scalaVersion := "2.12.17"
 
 crossScalaVersions := Seq(
-  "2.11.12", scalaVersion.value, "2.13.10", "3.0.0-RC1")
+  "2.11.12", scalaVersion.value, "2.13.11", "3.0.0-RC1")
 
 resolvers ++= Seq(
   Resolver.typesafeRepo("snapshots"),
